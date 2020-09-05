@@ -83,8 +83,3 @@ const getLiveUpdate = () => {
     });
   }, 1000);
 };
-
-generateLocationQuery("Los Angeles, California");
-getLiveUpdate();
-
-document.addEventListener("DOMContentLoaded", function () {});
