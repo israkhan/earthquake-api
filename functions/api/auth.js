@@ -52,11 +52,3 @@ const googleAuth = async () => {
     return error.message;
   }
 };
-
-const getUser = async (uid) => {
-  try {
-    return await db.collection("users").doc(uid).get();
-  } catch (error) {
-    return error.message;
-  }
-};
