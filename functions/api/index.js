@@ -1,10 +1,7 @@
 const router = require("express").Router();
 
-// router.use("/users", require("./users"));
-// router.use("/products", require("./products"));
-// router.use("/reviews", require("./reviews"));
-// router.use("/orderLists", require("./orderLists"));
-// router.use("/orders", require("./orders"));
+router.use("/users", require("./users"));
+router.use("/subscriptions", require("./subscriptions"));
 
 // router.use("/auth", require("../auth"));
 
