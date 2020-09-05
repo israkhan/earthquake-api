@@ -1,23 +1,16 @@
 const path = require("path");
 const functions = require("firebase-functions");
-const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
-
-const serviceAccount = require("./ServiceAccountKey.json");
 
 const app = express();
 app.use(cors({ origin: true }));
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://earthquake-notification-59115.firebaseio.com",
-});
-
-const db = admin.firestore();
-
 // app.use("/auth", require("./auth"));
-// app.use("/api", require("./api"));
+app.get("/hello-world", (req, res) => {
+  return res.status(200).send("Hello World!");
+});
+app.use("/api", require("./api"));
 
 // static file-serving middleware
 app.use(express.static(path.join(__dirname, "..", "public")));
@@ -40,5 +33,4 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).send(err.message || "Internal server error.");
 });
 
-module.exports = { db };
 exports.app = functions.https.onRequest(app);
