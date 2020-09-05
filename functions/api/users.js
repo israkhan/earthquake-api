@@ -49,4 +49,17 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
+router.put("/:id", async (req, res, next) => {
+  try {
+    const attributes = req.body.attributes;
+    const user = await db
+      .collection("users")
+      .doc(req.params.id)
+      .set(attributes);
+    return res.json(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
