@@ -13,19 +13,6 @@ const signUp = async (email, password) => {
   }
 };
 
-const createUser = async (uid, email, firstName, lastName, phoneNumber) => {
-  try {
-    await db.collection("users").doc(uid).set({
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-    });
-  } catch (error) {
-    return error.message;
-  }
-};
-
 const signIn = async (email, password) => {
   try {
     await auth.signInWithEmailAndPassword(email, password);
