@@ -22,9 +22,7 @@ const pollEarthquakeFeed = async () => {
  * Reformats array of earthquake data and extracts important values
  * @returns {array} Array of earthquakes
  */
-const parseEarthQuakeFeed = async () => {
-  const quakeArray = await pollEarthquakeFeed();
-
+const parseEarthQuakeFeed = (quakeArray) => {
   return quakeArray.map((obj) => {
     const props = obj.properties;
     return {
@@ -36,7 +34,7 @@ const parseEarthQuakeFeed = async () => {
         reports: props.felt,
         lng: obj.geometry.coordinates[0],
         lat: obj.geometry.coordinates[1],
-        magnitude: props.mag,
+        mag: props.mag,
         time: props.time,
         tsunami: props.tsunami,
         type: props.type,
@@ -72,10 +70,10 @@ const updateOrCreateQuakeInDb = (quakeArray) => {
 const findSubscribersToNotify = async (quakeArray) => {
   const subscriptions = await db.collection("subscriptions").get();
   return quakeArray.map((quake) => {
-    const { url, magnitude, time } = quake.properties;
+    const { url, mag } = quake.properties;
     return {
       url,
-      magnitude,
+      mag,
       subscriptions: subscriptions.filter((sub) => {
         return (
           sub.minLat < quake.lat &&
@@ -88,7 +86,7 @@ const findSubscribersToNotify = async (quakeArray) => {
   });
 };
 
-const sendTextMessage = async (phoneNumber, url, mag, location, subId) => {
+const sendTextMessage = async (url, mag, location, subId, phoneNumber) => {
   try {
     const client = require("twilio")(TWILIO_SID, TWILIO_SECRET);
     await client.messages.create({
@@ -106,4 +104,6 @@ module.exports = {
   pollEarthquakeFeed,
   parseEarthQuakeFeed,
   updateOrCreateQuakeInDb,
+  findSubscribersToNotify,
+  sendTextMessage,
 };
