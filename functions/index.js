@@ -16,13 +16,13 @@ app.use("/api", require("./api"));
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 // any remaining requests with an extension (.js, .css, etc.) send 404
-app.use((req, next) => {
+app.use((req, res, next) => {
   if (path.extname(req.path).length) {
     const err = new Error("Not found");
     err.status = 404;
-    next(err);
+    return next(err);
   } else {
-    next();
+    return next();
   }
 });
 
