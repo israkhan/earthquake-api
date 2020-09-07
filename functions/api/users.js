@@ -1,10 +1,31 @@
 const router = require("express").Router();
 const { db } = require("../firebase");
 
+let ref = db.collection("users");
+
+router.get("/", async (req, res, next) => {
+  try {
+    const snapshot = await ref.get();
+
+    let users = [];
+    snapshot.forEach((doc) => {
+      let id = doc.id;
+      let data = doc.data();
+      users.push({ id, ...data });
+    });
+
+    return res.json(users);
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get("/:id", async (req, res, next) => {
   try {
-    const user = await db.collection("users").doc(req.params.id).get();
-    return res.json(user).sendStatus(200);
+    const snapshot = await ref.doc(req.params.id).get();
+    const data = { id: req.params.id, ...snapshot.data() };
+
+    return res.json(data);
   } catch (err) {
     next(err);
   }
@@ -12,14 +33,8 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const body = req.body.user;
-    const user = await db.collection("users").doc(body.id).set({
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      phoneNumber: body.phoneNumber,
-    });
-    return res.json(user).sendStatus(200);
+    const response = await db.collection("users").add(req.body);
+    return res.json({ id: response.id });
   } catch (err) {
     next(err);
   }
@@ -27,12 +42,8 @@ router.post("/", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
-    const attributes = req.body.attributes;
-    const user = await db
-      .collection("users")
-      .doc(req.params.id)
-      .set(attributes);
-    return res.json(user);
+    await db.collection("users").doc(req.params.id).update(req.body);
+    return res.sendStatus(200);
   } catch (err) {
     next(err);
   }
