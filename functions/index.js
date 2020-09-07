@@ -3,11 +3,17 @@ const functions = require("firebase-functions");
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const swaggerJsDoc = require("swagger-jsdoc");
+const swaggerUI = require("swagger-ui-express");
+const swaggerOptions = require("./swagger.json");
 
 const app = express();
 app.use(morgan("dev"));
 app.use(cors({ origin: true }));
 
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 // app.use("/auth", require("./auth"));
 app.use("/api", require("./api"));
 
