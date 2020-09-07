@@ -1,15 +1,14 @@
 const path = require("path");
 const functions = require("firebase-functions");
 const express = require("express");
+const morgan = require("morgan");
 const cors = require("cors");
 
 const app = express();
+app.use(morgan("dev"));
 app.use(cors({ origin: true }));
 
 // app.use("/auth", require("./auth"));
-app.get("/hello-world", (req, res) => {
-  return res.status(200).send("Hello World!");
-});
 app.use("/api", require("./api"));
 
 // static file-serving middleware
