@@ -33,6 +33,7 @@ let userRef = db.collection("users");
  *        type: float
  *      phoneNumber:
  *        type: string
+<<<<<<< HEAD
  *    NewSubscription:
  *      type: object
  *      required:
@@ -40,6 +41,28 @@ let userRef = db.collection("users");
  *      properties:
  *        id:
  *          type: string
+=======
+ *  NewSubscription:
+ *    type: object
+ *    required:
+ *      - id
+ *    properties:
+ *      id:
+ *        type: string
+ *  Earthquake:
+ *    type: object
+ *    required:
+ *      - id
+ *      - update
+ *      - properties
+ *    properties:
+ *      id:
+ *        type: string
+ *      update:
+ *        type: integer
+ *      properties:
+ *        type: object
+>>>>>>> d8cd224c72903dca68b6cd9df3ea4057e9c136d5
  *
  */
 
@@ -163,7 +186,29 @@ router.delete("/:userId/:subscriptionId", async (req, res, next) => {
   }
 });
 
+<<<<<<< HEAD
 //Get all earthquakes for a subscription
+=======
+/**
+ * @swagger
+ * /earthquake-notification-59115/us-central1/app/api/subscriptions/{id}/earthquakes:
+ *  get:
+ *    description: Get all earthquakes for a subscription
+ *    parameters:
+ *    - name: id
+ *      description: Id of subscription
+ *      in: path
+ *      type: string
+ *      required: true
+ *    responses:
+ *      200:
+ *        description: Earthquakes subcollection returned succesfully
+ *        schema:
+ *          type: array
+ *          items:
+ *            $ref: '#/definitions/Earthquake'
+ */
+>>>>>>> d8cd224c72903dca68b6cd9df3ea4057e9c136d5
 router.get("/:id/earthquakes", async (req, res, next) => {
   try {
     const snapshot = await subRef
