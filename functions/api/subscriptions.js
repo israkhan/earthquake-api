@@ -1,38 +1,123 @@
 const router = require("express").Router();
 const { db } = require("../firebase");
+const { user } = require("firebase-functions/lib/providers/auth");
 
-const subRef = db.collection("subscriptions");
+let subRef = db.collection("subscriptions");
+let userRef = db.collection("users");
 
-//Create a subscription for a user
-router.post("/", async (req, res, next) => {
+/**
+ * @swagger
+ *
+ * definitions:
+ *  Subscription:
+ *    type: object
+ *    required:
+ *      - location
+ *      - minLat
+ *      - minLng
+ *      - maxLat
+ *      - maxLng
+ *      - phoneNumber
+ *    properties:
+ *      id:
+ *        type: string
+ *      location:
+ *        type: string
+ *      minLat:
+ *        type: float
+ *      minLng:
+ *        type: float
+ *      maxLat:
+ *        type: float
+ *      maxLng:
+ *        type: float
+ *      phoneNumber:
+ *        type: string
+ *    NewSubscription:
+ *      type: object
+ *      required:
+ *        - id
+ *      properties:
+ *        id:
+ *          type: string
+ *
+ */
+
+/**
+ * @swagger
+ * /earthquake-notification-59115/us-central1/app/api/subscriptions/{userId}:
+ *  post:
+ *    description: Creae a subscription for a specific user
+ *    parameters:
+ *    - name: userId
+ *      description: Id of user subscribing
+ *      in: path
+ *      type: string
+ *      required: true
+ *    - name: subscription
+ *      description: Subscription details
+ *      in: body
+ *      type: object
+ *      required: true
+ *      schema:
+ *        $ref: '#/definitions/Subscription'
+ *    responses:
+ *      200:
+ *        description: Subscription created successfully
+ *        schema:
+ *          $ref: '#/definitions/NewSubscription'
+ */
+router.post("/:userId", async (req, res, next) => {
   try {
-    const subscription = await db
-      .collection("subscriptions")
-      .doc()
-      .set(req.body.subscription);
+    const response = subRef.add(req.body.subscription);
 
     // add subsciption as a subcollection of the authenticated user
-    await db
-      .collection("users")
-      .document(req.body.uid)
+    await userRef
+      .document(req.params.uid)
       .collection("subscriptions")
-      .document(subscription.id)
+      .document(response.id)
       .set(req.body.subscription);
 
-    return res.json(subscription);
+    return res.json({ id: response.id });
   } catch (err) {
     next(err);
   }
 });
 
-// Get all subscriptions for the current user
+/**
+ * @swagger
+ * /earthquake-notification-59115/us-central1/app/api/subscriptions/{userId}:
+ *  get:
+ *    description: Get all subscriptions for a user
+ *    parameters:
+ *    - name: userId
+ *      description: Id of current user
+ *      in: path
+ *      type: string
+ *      required: true
+ *    responses:
+ *      200:
+ *        description: Subscriptions returned succesfully
+ *        schema:
+ *          type: array
+ *          items:
+ *            $ref: '#/definitions/Subscription'
+ *      400:
+ *        description: User does not exist
+ */
 router.get("/:userId", async (req, res, next) => {
   try {
-    const subscriptions = await db
-      .collection("users")
-      .document(req.body.uid)
+    const snapshot = await userRef
+      .document(req.params.uid)
       .collection("subscriptions")
       .get();
+
+    let subscriptions = [];
+    snapshot.forEach((doc) => {
+      let id = doc.id;
+      let data = doc.data();
+      subscriptions.push({ id, ...data });
+    });
 
     return res.json(subscriptions);
   } catch (err) {
@@ -40,16 +125,37 @@ router.get("/:userId", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+/**
+ * @swagger
+ * /earthquake-notification-59115/us-central1/app/api/subscriptions/{userId}/{subscriptionId}:
+ *  get:
+ *    description: Delete subscription for a user
+ *    parameters:
+ *    - name: userId
+ *      description: Id of current user
+ *      in: path
+ *      type: string
+ *      required: true
+ *    - name: subscriptionId
+ *      description: Id of subscription being deleted
+ *      in: path
+ *      type: string
+ *      required: true
+ *    responses:
+ *      200:
+ *        description: Subscriptions deleted succesfully
+ *      400:
+ *        description: Subscription does not exist
+ */
+router.delete("/:userId/:subscriptionId", async (req, res, next) => {
   try {
-    await db
-      .collection("users")
-      .document(req.body.uid)
+    await userRef
+      .document(req.params.uid)
       .collection("subscriptions")
       .document(req.params.id)
       .delete();
 
-    await db.collection("subscriptions").document(req.params.id).delete();
+    await subRef.document(req.params.id).delete();
 
     return res.sendStatus(200);
   } catch (err) {
