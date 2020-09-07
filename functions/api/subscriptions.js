@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const { db } = require("../firebase");
 
+const subRef = db.collection("subscriptions");
+
 //Create a subscription for a user
 router.post("/", async (req, res, next) => {
   try {
@@ -50,6 +52,26 @@ router.delete("/:id", async (req, res, next) => {
     await db.collection("subscriptions").document(req.params.id).delete();
 
     return res.sendStatus(200);
+  } catch (err) {
+    next(err);
+  }
+});
+
+//Get all earthquakes for a subscription
+router.get("/:id/earthquakes", async (req, res, next) => {
+  try {
+    const snapshot = await subRef
+      .doc(req.params.id)
+      .collection("earthquakes")
+      .get();
+
+    let quakes = [];
+    snapshot.forEach((doc) => {
+      let data = doc.data();
+      quakes.push({ ...data });
+    });
+
+    return res.json(quakes);
   } catch (err) {
     next(err);
   }
