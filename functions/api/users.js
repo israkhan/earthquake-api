@@ -3,6 +3,15 @@ const { db } = require("../firebase");
 
 let ref = db.collection("users");
 
+/**
+ * @swagger
+ * /earthquake-notification-59115/us-central1/app/api/users/:
+ *  get:
+ *    description: Get all users in db
+ *    responses:
+ *      '200':
+ *        description: Successful response
+ */
 router.get("/", async (req, res, next) => {
   try {
     const snapshot = await ref.get();
@@ -20,6 +29,21 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /earthquake-notification-59115/us-central1/app/api/users/{id}:
+ *  get:
+ *    description: Get a specific user from the database
+ *    parameters:
+ *    - name: id
+ *      description: Id of user
+ *      in: path
+ *      type: integer
+ *      required: true
+ *    responses:
+ *      '200':
+ *        description: Successful response
+ */
 router.get("/:id", async (req, res, next) => {
   try {
     const snapshot = await ref.doc(req.params.id).get();

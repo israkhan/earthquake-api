@@ -1,0 +1,15 @@
+{
+  "swaggerDefinition": {
+    "info": {
+      "title": "Earthquake Tracker API",
+      "description": "Earthquake infomration and notifications",
+      "contact": {
+        "name": "Isra Khan"
+      },
+      "servers": [
+        "http://localhost:5001/earthquake-notification-59115/us-central1/app"
+      ]
+    }
+  },
+  "apis": ["./api/*.js", "index.js", "./auth/*.js"]
+}
