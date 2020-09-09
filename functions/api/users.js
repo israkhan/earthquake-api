@@ -111,7 +111,10 @@ router.get("/:id", async (req, res, next) => {
  */
 router.post("/", async (req, res, next) => {
   try {
-    const response = await db.collection("users").add(req.body);
+    const response = await db
+      .collection("users")
+      .doc(req.body.uid)
+      .set(req.body);
     return res.json({ id: response.id });
   } catch (err) {
     next(err);
