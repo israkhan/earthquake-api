@@ -6,10 +6,24 @@ const cors = require("cors");
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUI = require("swagger-ui-express");
 const swaggerOptions = require("./swagger.json");
+const { response } = require("express");
 
 const app = express();
 app.use(morgan("dev"));
-app.use(cors({ origin: true }));
+app.use(
+  cors({
+    origin: "*",
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Content-Length",
+      "X-Requested-With",
+      "Accept",
+    ],
+    methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
+    optionsSuccessStatus: 200,
+  })
+);
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
