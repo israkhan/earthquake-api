@@ -22,7 +22,7 @@ const pollEarthquakeFeed = async () => {
  * Reformats array of earthquake data and extracts important values
  * @returns {array} Array of earthquakes
  */
-const parseEarthQuakeFeed = (quakeArray) => {
+const parseEarthquakeFeed = (quakeArray) => {
   return quakeArray.map((obj) => {
     const props = obj.properties;
     return {
@@ -35,6 +35,7 @@ const parseEarthQuakeFeed = (quakeArray) => {
         lng: obj.geometry.coordinates[0],
         lat: obj.geometry.coordinates[1],
         mag: props.mag,
+        place: props.place,
         time: props.time,
         tsunami: props.tsunami,
         type: props.type,
@@ -102,7 +103,7 @@ const sendTextMessage = async (url, mag, location, subId, phoneNumber) => {
 
 module.exports = {
   pollEarthquakeFeed,
-  parseEarthQuakeFeed,
+  parseEarthquakeFeed,
   updateOrCreateQuakeInDb,
   findSubscribersToNotify,
   sendTextMessage,

@@ -1,7 +1,7 @@
 const CronJob = require("cron").CronJob;
 const {
   pollEarthquakeFeed,
-  parseEarthQuakeFeed,
+  parseEarthquakeFeed,
   updateOrCreateQuakeInDb,
   findSubscribersToNotify,
   sendTextMessage,
@@ -16,7 +16,7 @@ const pollUSGAndSendUpdates = new CronJob(
       this.stop();
     }
 
-    const parsedQuakeData = parseEarthQuakeFeed(quakeData);
+    const parsedQuakeData = parseEarthquakeFeed(quakeData);
 
     const newQuakes = await updateOrCreateQuakeInDb(parsedQuakeData);
 

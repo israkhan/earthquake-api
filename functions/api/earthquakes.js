@@ -114,7 +114,6 @@ router.get(`/`, async (req, res, next) => {
       startDate,
       endDate
     );
-    // Return data consistent with fields returned in polling results
     return res.json(earthquakes);
   } catch (err) {
     next(err);

@@ -1,5 +1,6 @@
 const { MAPQUEST_KEY } = require("../secrets");
 const fetch = require("node-fetch");
+const { parseEarthquakeFeed } = require("../cron/utility");
 
 /**
  * Grabs all earthquakes in the radius provided
@@ -9,6 +10,7 @@ const fetch = require("node-fetch");
  * @param {integer} maxLng maximum longitude
  * @param {string} startDate
  * @param {string} endDate
+ * @returns {array} array of earthquake objects
  */
 const getEarthquakesByLocation = async (
   minLat,
@@ -26,7 +28,8 @@ const getEarthquakesByLocation = async (
   );
 
   const data = await result.json();
-  return data.features;
+  const quakeArray = parseEarthquakeFeed(data.features);
+  return quakeArray;
 };
 
 /**
