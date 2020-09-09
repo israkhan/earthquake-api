@@ -1,4 +1,5 @@
 const { MAPQUEST_KEY } = require("../secrets");
+const fetch = require("node-fetch");
 
 /**
  * Grabs all earthquakes in the radius provided
@@ -18,14 +19,14 @@ const getEarthquakesByLocation = async (
   endDate
 ) => {
   const result = await fetch(
-    `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minlatitude=${minLat}&minlongitude=${minLng}&maxlatitude=${maxLat}&maxlongitude=${maxLng}`,
+    `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minlatitude=${minLat}&minlongitude=${minLng}&maxlatitude=${maxLat}&maxlongitude=${maxLng}&endtime=${endDate}&starttime=${startDate}`,
     {
       method: "GET",
     }
   );
 
   const data = await result.json();
-  console.log("EARTH:", data);
+  return data.features;
 };
 
 /**
@@ -45,41 +46,37 @@ const locationToLongLat = async (locationString) => {
   return data.results[0].locations[0].displayLatLng;
 };
 
-/**
- *
- * @param {string} locationString
- * @param {integer} distance
- */
-const generateLocationQuery = async (locationString, distance) => {
-  const latLngObject = await locationToLongLat(locationString);
-  console.log(latLngObject, "latlngobj");
+const convertRadius = (geoCode, radius) => {
+  const r = radius / 3958.8;
+  const lngRadians = (geoCode.lng * Math.PI) / 180;
+  const latRadians = (geoCode.lat * Math.PI) / 180;
 
-  const radius = {
-    minLat: latLngObject.lat - 1,
-    maxLat: latLngObject.lat + 1,
-    minLng: latLngObject.lat - 1,
-    maxLng: latLngObject.lat + 1,
+  const latMin = latRadians - r;
+  const latMax = latRadians + r;
+  const lngMin = lngRadians - r;
+  const lngMax = lngRadians + r;
+
+  const latMinDegrees = (latMin * 180) / Math.PI;
+  const latMaxDegrees = (latMax * 180) / Math.PI;
+  const lngMinDegrees = (lngMin * 180) / Math.PI;
+  const lngMaxDegrees = (lngMax * 180) / Math.PI;
+
+  return {
+    minLat: latMinDegrees,
+    maxLat: latMaxDegrees,
+    minLng: lngMinDegrees,
+    maxLng: lngMaxDegrees,
   };
-
-  getEarthquakesByLocation(
-    radius.minLat,
-    radius.maxLat,
-    radius.minLng,
-    radius.maxLng
-  );
 };
 
-const getLiveUpdate = () => {
-  const text = document.getElementById("isra");
+const convertDate = (date) => {
+  const dateParts = date.split(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  return dateParts[3] + "-" + dateParts[1] + "-" + dateParts[2];
+};
 
-  setInterval(function () {
-    fetch(
-      "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson"
-    ).then((response) => {
-      return response.json().then((data) => {
-        text.textContent = data;
-        console.log(data);
-      });
-    });
-  }, 1000);
+module.exports = {
+  getEarthquakesByLocation,
+  locationToLongLat,
+  convertDate,
+  convertRadius,
 };

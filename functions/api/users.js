@@ -109,6 +109,8 @@ router.get("/:id", async (req, res, next) => {
  *        schema:
  *          $ref: '#/definitions/NewUser'
  */
+
+//TODO: Have post route return user object
 router.post("/", async (req, res, next) => {
   try {
     const response = await db
