@@ -44,7 +44,18 @@ const quakeRef = db.collection("earthquakes");
  *      200:
  *        description: Earthquakes returned succesfully
  *        schema:
- *          $ref: '#/definitions/Earthquake'
+ *          type: object
+ *          properties:
+ *            earthquakes:
+ *              description: Earthquake properties
+ *              scehma:
+ *                type: array
+ *                items:
+ *                  $ref: '#/definitions/Earthquake'
+ *            geoCode:
+ *              description: Query geoCode
+ *              schema:
+ *                type: object
  *      400:
  *        description: Earthquake does not exist
  */
@@ -114,7 +125,7 @@ router.get(`/`, async (req, res, next) => {
       startDate,
       endDate
     );
-    return res.json(earthquakes);
+    return res.json({ earthquakes, geoCode });
   } catch (err) {
     next(err);
   }
