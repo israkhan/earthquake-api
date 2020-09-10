@@ -25,7 +25,7 @@ let earthQuakeRef = db.collection("earthquakes");
 
 /**
  * @swagger
- * /earthquake-notification-59115/us-central1/app/api/users/{quakeId}:
+ * /earthquake-notification-59115/us-central1/app/api/reports/{quakeId}:
  *  get:
  *    description: Get a report for an earthquake
  *    parameters:
@@ -49,7 +49,7 @@ router.get("/:quakeId", async (req, res, next) => {
   try {
     const snapshot = await earthQuakeRef
       .doc(req.params.quakeId)
-      .colletion("reports")
+      .collection("reports")
       .get();
 
     let reports = [];
@@ -66,25 +66,27 @@ router.get("/:quakeId", async (req, res, next) => {
 
 /**
  * @swagger
- * /earthquake-notification-59115/us-central1/app/api/users/{quakeId}:
+ * /earthquake-notification-59115/us-central1/app/api/reports/:
  *  post:
  *    description: Create a report for an earthquake
  *    parameters:
- *    - name: quakeId
- *      description: Id of the earthquake to create report for
- *      in: path
- *      type: string
+ *    - name: report
+ *      desciprtion: Report details to add to earthquake
+ *      in: body
+ *      type: object
  *      required: true
+ *      schema:
+ *        $ref: '#/definitions/Report'
  *    responses:
  *      200:
  *        description: Report created succesfully
  */
 
-router.post("/:quakeId", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   try {
     await earthQuakeRef
-      .doc(req.params.quakeId)
-      .colletion("reports")
+      .doc(req.body.quakeId)
+      .collection("reports")
       .set(req.body);
 
     return res.sendStatus(200);
@@ -92,3 +94,46 @@ router.post("/:quakeId", async (req, res, next) => {
     next(err);
   }
 });
+
+/**
+ * @swagger
+ * /earthquake-notification-59115/us-central1/app/api/reports/{quakeId}/{reportId}:
+ *  put:
+ *    description: Update report info
+ *    parameters:
+ *    - name: quakeId
+ *      description: Id of earthquake
+ *      in: path
+ *      type: string
+ *      required: true
+ *    - name: reportId
+ *      description: Id of report
+ *      in: path
+ *      type: string
+ *      required: true
+ *    - name: report
+ *      description: Report attributes to update
+ *      in: body
+ *      type: object
+ *      required: fals
+ *      schema:
+ *        $ref: '#/definitions/Report'
+ *    responses:
+ *      200:
+ *        description: User updated succesfully
+ */
+router.put("/:quakeId/:reportId", async (req, res, next) => {
+  try {
+    await earthQuakeRef
+      .doc(req.body.quakeId)
+      .collection("reports")
+      .doc(req.params.reportId)
+      .update(req.body);
+
+    return res.sendStatus(200);
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = router;

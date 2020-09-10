@@ -120,4 +120,31 @@ router.get(`/`, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /earthquake-notification-59115/us-central1/app/api/earthquakes/:
+ *  post:
+ *    description: Store earthquake in db
+ *    parameters:
+ *    - name: earthquake
+ *      description: Attributes of earthquake
+ *      in: body
+ *      type: object
+ *      required: true
+ *      schema:
+ *        $ref: '#/definitions/Earthquake'
+ *    responses:
+ *      200:
+ *        description: Report created succesfully
+ */
+router.post("/", async (req, res, next) => {
+  try {
+    await quakeRef.doc(req.body.id).set(req.body);
+
+    return res.sendStatus(200);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
