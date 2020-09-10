@@ -87,7 +87,7 @@ router.post("/", async (req, res, next) => {
     await earthQuakeRef
       .doc(req.body.quakeId)
       .collection("reports")
-      .set(req.body);
+      .add(req.body);
 
     return res.sendStatus(200);
   } catch (err) {
