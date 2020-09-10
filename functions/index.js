@@ -6,9 +6,10 @@ const cors = require("cors");
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUI = require("swagger-ui-express");
 const swaggerOptions = require("./swagger.json");
-const { response } = require("express");
+// const pollUSGAndSendUpdates = require("./cron/pollUSGAndSendUpdates");
 
 const app = express();
+
 app.use(morgan("dev"));
 app.use(
   cors({
@@ -25,6 +26,7 @@ app.use(
   })
 );
 
+// pollUSGAndSendUpdates.start();
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
@@ -52,4 +54,5 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).send(err.message || "Internal server error.");
 });
 
+// exports.pollUSGAndSendUpdates = pollUSGAndSendUpdates.pollUSGAndSendUpdates;
 exports.app = functions.https.onRequest(app);

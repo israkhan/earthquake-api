@@ -20,13 +20,6 @@ let ref = db.collection("users");
  *        type: string
  *      phoneNumber:
  *        type: string
- *    NewUser:
- *      type: object
- *      required:
- *        - id
- *      properties:
- *        id:
- *          type: string
  *
  */
 
@@ -82,8 +75,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     const snapshot = await ref.doc(req.params.id).get();
-    const data = { id: req.params.id, ...snapshot.data() };
-
+    const data = snapshot.data();
     return res.json(data);
   } catch (err) {
     next(err);
@@ -106,18 +98,12 @@ router.get("/:id", async (req, res, next) => {
  *    responses:
  *      200:
  *        description: User created successfully
- *        schema:
- *          $ref: '#/definitions/NewUser'
  */
 
-//TODO: Have post route return user object
 router.post("/", async (req, res, next) => {
   try {
-    const response = await db
-      .collection("users")
-      .doc(req.body.uid)
-      .set(req.body);
-    return res.json({ id: response.id });
+    await db.collection("users").doc(req.body.uid).set(req.body);
+    return res.sendStatus(200);
   } catch (err) {
     next(err);
   }

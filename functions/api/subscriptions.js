@@ -82,14 +82,13 @@ let userRef = db.collection("users");
  */
 router.post("/:userId", async (req, res, next) => {
   try {
-    const response = subRef.add(req.body.subscription);
-
+    const response = await subRef.add(req.body);
     // add subsciption as a subcollection of the authenticated user
     await userRef
-      .document(req.params.uid)
+      .doc(req.params.userId)
       .collection("subscriptions")
-      .document(response.id)
-      .set(req.body.subscription);
+      .doc(response.id)
+      .set(req.body);
 
     return res.json({ id: response.id });
   } catch (err) {
