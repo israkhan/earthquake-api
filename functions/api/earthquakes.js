@@ -106,17 +106,21 @@ router.get("/:id", async (req, res, next) => {
 router.get(`/`, async (req, res, next) => {
   try {
     const params = req.query;
-    //TODO: add error handling if geoCode returns an error
+
+    // Convert location string to a geoCode (lat, lng)
     const geoCode = await locationToLongLat(params.location);
+
+    // Generate min and max lat + lng for USGS query
     const { minLat, maxLat, minLng, maxLng } = convertRadius(
       geoCode,
       params.radius
     );
 
-    // Need to be YYYY-MM-DD
+    // USGS requries a YYYY-MM-DD date format
     const startDate = convertDate(params.startDate);
     const endDate = convertDate(params.endDate);
 
+    // Make call to USGS to grab earthquake data
     const earthquakes = await getEarthquakesByLocation(
       minLat,
       maxLat,
@@ -125,6 +129,8 @@ router.get(`/`, async (req, res, next) => {
       startDate,
       endDate
     );
+
+    // Returning the geoCode because it can be used for subscription request
     return res.json({ earthquakes, geoCode });
   } catch (err) {
     next(err);

@@ -28,9 +28,8 @@ app.use(
 
 // pollUSGAndSendUpdates.start();
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
-// app.use("/auth", require("./auth"));
+
 app.use("/api", require("./api"));
 
 // static file-serving middleware
